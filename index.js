@@ -1,8 +1,15 @@
 import express from "express";
+import morgan from "morgan";
 
 const app = express();
 
 app.use(express.json());
+
+morgan.token("body", (req, res) => {
+  return JSON.stringify(req.body);
+});
+
+app.use(morgan(":method :url :response-time ms - :res[content-length] :body"));
 
 let persons = [
   {
@@ -75,12 +82,13 @@ const checkDuplicateName = (name) => {
   const findPerson = persons.find(
     (p) => p.name.toLowerCase() === name.toLowerCase()
   );
-  console.log(findPerson);
+
   return findPerson;
 };
 
 app.post("/api/persons", (req, res) => {
   const body = req.body;
+
   const person = {
     id: getId(),
     name: body.name,
@@ -93,7 +101,6 @@ app.post("/api/persons", (req, res) => {
     });
   }
 
-  console.log(checkDuplicateName(person.name));
   if (checkDuplicateName(person.name)) {
     return res.status(409).json({
       error: "name must be unique",
