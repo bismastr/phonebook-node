@@ -17,6 +17,6 @@ DELETE http://localhost:3001/api/persons/39292
 POST http://localhost:3001/api/persons
 content-type: application/json
 {
-    "name": "Bisma",
+    "name": "Bismaa",
     "number": "321312"
 }

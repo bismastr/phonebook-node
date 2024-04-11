@@ -11,6 +11,7 @@
   "author": "bismastr",
   "license": "ISC",
   "devDependencies": {
+    "@flydotio/dockerfile": "^0.5.4",
     "nodemon": "^3.1.0"
   },
   "dependencies": {
