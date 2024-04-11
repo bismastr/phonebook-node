@@ -6,7 +6,9 @@
   "type": "module",
   "scripts": {
     "dev": "nodemon index.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build:ui": "rm -rf dist && cd ../bisma-learning-fullstack/part2/phonebook && npm run build && cp -r dist ~/Documents/learning/phonebook-node",
+    "deploy:full": "npm run build:ui && git add . && git commit -m uibuild && git push"
   },
   "author": "bismastr",
   "license": "ISC",

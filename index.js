@@ -4,6 +4,7 @@ import morgan from "morgan";
 const app = express();
 
 app.use(express.json());
+app.use(express.static("dist"));
 
 morgan.token("body", (req, res) => {
   return JSON.stringify(req.body);
@@ -33,10 +34,6 @@ let persons = [
     number: "39-23-6423122",
   },
 ];
-
-app.get("/", (req, res) => {
-  res.send("<h1>Hello World!</h1>");
-});
 
 const getInfo = () => {
   const personCount = persons.length;
