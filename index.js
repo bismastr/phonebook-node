@@ -33,6 +33,11 @@ let persons = [
     name: "Mary Poppendieck",
     number: "39-23-6423122",
   },
+  {
+    id: 5,
+    name: "Bisma",
+    number: "3",
+  },
 ];
 
 const getInfo = () => {
@@ -68,7 +73,7 @@ app.delete("/api/persons/:id", (req, res) => {
   const id = Number(req.params.id);
   persons = persons.filter((p) => p.id !== id);
 
-  res.status(204).end();
+  res.status(200).json();
 });
 
 const getId = () => {
@@ -107,6 +112,30 @@ app.post("/api/persons", (req, res) => {
   persons = persons.concat(person);
 
   res.json(person);
+});
+
+app.put("/api/persons/:id", (req, res) => {
+  const id = Number(req.params.id);
+  const body = req.body;
+  let updatedPerson = undefined;
+
+  for (let p of persons) {
+    if (p.id === id) {
+      console.log(body.number);
+      p.number = body.number;
+      updatedPerson = p;
+      console.log(updatedPerson);
+      break;
+    }
+  }
+
+  if (updatedPerson) {
+    res.json(updatedPerson);
+  } else {
+    res.status(402).json({
+      message: `Cannot updatePerson with id ${id}`,
+    });
+  }
 });
 
 const PORT = process.env.PORT || 3001;
