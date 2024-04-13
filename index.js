@@ -1,16 +1,16 @@
 import express from "express";
 import morgan from "morgan";
+import mongoose from "mongoose";
 
 const app = express();
 
 app.use(express.json());
 app.use(express.static("dist"));
+app.use(morgan(":method :url :response-time ms - :res[content-length] :body"));
 
 morgan.token("body", (req, res) => {
   return JSON.stringify(req.body);
 });
-
-app.use(morgan(":method :url :response-time ms - :res[content-length] :body"));
 
 let persons = [
   {
