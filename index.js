@@ -1,6 +1,7 @@
 import express from "express";
 import morgan from "morgan";
-import mongoose from "mongoose";
+import "dotenv/config";
+import Person from "./models/phonebook.js";
 
 const app = express();
 
@@ -52,66 +53,73 @@ app.get("/info", (req, res) => {
 });
 
 app.get("/api/persons", (req, res) => {
-  res.json(persons);
+  Person.find({}).then((response) => {
+    res.json(response);
+  });
 });
 
 app.get("/api/persons/:id", (req, res) => {
-  const id = Number(req.params.id);
-  const person = persons.find((p) => p.id === id);
+  const id = req.params.id;
 
-  if (!person) {
-    res.status(404).json({
-      code: "404",
-      message: "Id not found",
+  Person.findById(id)
+    .then((response) => {
+      res.json(response);
+    })
+    .catch((err) => {
+      res.status(404).json({
+        code: "404",
+        message: err,
+      });
     });
-  }
-
-  res.json(person);
 });
 
 app.delete("/api/persons/:id", (req, res) => {
-  const id = Number(req.params.id);
-  persons = persons.filter((p) => p.id !== id);
-
-  res.status(200).json();
+  const id = req.params.id;
+  Person.findByIdAndDelete(id)
+    .then((result) => {
+      res.json(result);
+    })
+    .catch((err) => {
+      res.status(404).json({
+        code: "404",
+        message: err,
+      });
+    });
 });
-
-const getId = () => {
-  return Math.floor(Math.random() * 9999);
-};
-
-const checkDuplicateName = (name) => {
-  const findPerson = persons.find(
-    (p) => p.name.toLowerCase() === name.toLowerCase()
-  );
-
-  return findPerson;
-};
 
 app.post("/api/persons", (req, res) => {
   const body = req.body;
 
-  const person = {
-    id: getId(),
+  const newPerson = new Person({
     name: body.name,
     number: body.number,
-  };
+  });
 
-  if (!person.name || !person.number) {
+  if (!newPerson.name || !newPerson.number) {
     return res.status(402).json({
       message: "Missing request body",
     });
   }
 
-  if (checkDuplicateName(person.name)) {
-    return res.status(409).json({
-      error: "name must be unique",
-    });
-  }
-
-  persons = persons.concat(person);
-
-  res.json(person);
+  Person.findOne({ name: newPerson.name }).then((result) => {
+    if (result) {
+      res.status(400).json({
+        message: "Duplicated",
+      });
+    } else {
+      newPerson
+        .save()
+        .then((response) => {
+          res.status(200).json(response);
+        })
+        .catch((err) => {
+          res.status(400).json({
+            stats: 400,
+            message: err,
+          });
+        });
+    }
+  });
 });
 
 app.put("/api/persons/:id", (req, res) => {
@@ -138,7 +146,7 @@ app.put("/api/persons/:id", (req, res) => {
   }
 });
 
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });

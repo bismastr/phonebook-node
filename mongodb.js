@@ -25,6 +25,7 @@ console.log(person.name);
 if (!person.name) {
   console.log(name);
   Person.find({}).then((result) => {
+    console.log(result);
     result.forEach((person) => {
       console.log(person);
       mongoose.connection.close();

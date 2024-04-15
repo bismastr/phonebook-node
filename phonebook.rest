@@ -8,16 +8,16 @@ GET http://localhost:3001/info
 GET http://localhost:3001/api/persons
 
 ### Get Persons by id
-GET http://localhost:3001/api/persons/5
+GET http://localhost:3001/api/persons/661a1924ce804956b867cac5
 
 ### Delete Persons by id
-DELETE http://localhost:3001/api/persons/5
+DELETE http://localhost:3001/api/persons/661a193622ef23e494ee97df
 
 ### Post Persons by id
 POST http://localhost:3001/api/persons
 content-type: application/json
 {
-    "name": "Bismaa",
+    "name": "Bismaaasasdadsadsaa",
     "number": "321312"
 }
 
