@@ -85,12 +85,6 @@ app.post("/api/persons", (req, res, next) => {
     number: body.number,
   });
 
-  // if (!newPerson.name || !newPerson.number) {
-  //   return res.status(402).json({
-  //     message: "Missing request body",
-  //   });
-  // }
-
   Person.findOne({ name: newPerson.name }).then((result) => {
     if (result) {
       res.status(400).json({
