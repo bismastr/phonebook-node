@@ -22,6 +22,8 @@ const errorHandler = (err, req, res, next) => {
 
   if (err.name === "CastError") {
     return res.status(400).send({ err: "malformatted id" });
+  } else if (err.name === "ValidationError") {
+    return res.status(400).json({ error: err.message });
   }
 
   next(err);
@@ -64,7 +66,7 @@ app.get("/api/persons/:id", (req, res, next) => {
     });
 });
 
-app.delete("/api/persons/:id", (req, res) => {
+app.delete("/api/persons/:id", (req, res, next) => {
   const id = req.params.id;
   Person.findByIdAndDelete(id)
     .then((result) => {
@@ -75,7 +77,7 @@ app.delete("/api/persons/:id", (req, res) => {
     });
 });
 
-app.post("/api/persons", (req, res) => {
+app.post("/api/persons", (req, res, next) => {
   const body = req.body;
 
   const newPerson = new Person({
@@ -83,11 +85,11 @@ app.post("/api/persons", (req, res) => {
     number: body.number,
   });
 
-  if (!newPerson.name || !newPerson.number) {
-    return res.status(402).json({
-      message: "Missing request body",
-    });
-  }
+  // if (!newPerson.name || !newPerson.number) {
+  //   return res.status(402).json({
+  //     message: "Missing request body",
+  //   });
+  // }
 
   Person.findOne({ name: newPerson.name }).then((result) => {
     if (result) {
@@ -107,11 +109,15 @@ app.post("/api/persons", (req, res) => {
   });
 });
 
-app.put("/api/persons/:id", (req, res) => {
+app.put("/api/persons/:id", (req, res, next) => {
   const id = req.params.id;
   const body = req.body;
 
-  Person.findByIdAndUpdate(id, { number: body.number })
+  Person.findByIdAndUpdate(
+    id,
+    { number: body.number },
+    { new: true, runValidators: true, context: "query" }
+  )
     .then((result) => {
       res.json({
         ...result.toJSON(),
