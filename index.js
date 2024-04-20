@@ -5,44 +5,30 @@ import Person from "./models/phonebook.js";
 
 const app = express();
 
-app.use(express.json());
 app.use(express.static("dist"));
+app.use(express.json());
 app.use(morgan(":method :url :response-time ms - :res[content-length] :body"));
 
 morgan.token("body", (req, res) => {
   return JSON.stringify(req.body);
 });
 
-let persons = [
-  {
-    id: 1,
-    name: "Arto Hellas",
-    number: "040-123456",
-  },
-  {
-    id: 2,
-    name: "Ada Lovelace",
-    number: "39-44-5323523",
-  },
-  {
-    id: 3,
-    name: "Dan Abramov",
-    number: "12-43-234345",
-  },
-  {
-    id: 4,
-    name: "Mary Poppendieck",
-    number: "39-23-6423122",
-  },
-  {
-    id: 5,
-    name: "Bisma",
-    number: "3",
-  },
-];
+const unknownEndpoint = (req, res) => {
+  res.status(404).send({ error: "unknown endpoint" });
+};
+
+const errorHandler = (err, req, res, next) => {
+  console.error(err.message);
+
+  if (err.name === "CastError") {
+    return res.status(400).send({ err: "malformatted id" });
+  }
+
+  next(err);
+};
 
 const getInfo = () => {
-  const personCount = persons.length;
+  const personCount = 0;
   const date = new Date();
 
   return `<div> <p>Phonebook has info for ${personCount} people</p> <p>${date}</p> </div>`;
@@ -53,23 +39,28 @@ app.get("/info", (req, res) => {
 });
 
 app.get("/api/persons", (req, res) => {
-  Person.find({}).then((response) => {
-    res.json(response);
-  });
-});
-
-app.get("/api/persons/:id", (req, res) => {
-  const id = req.params.id;
-
-  Person.findById(id)
+  Person.find({})
     .then((response) => {
       res.json(response);
     })
     .catch((err) => {
-      res.status(404).json({
-        code: "404",
-        message: err,
-      });
+      next(err);
+    });
+});
+
+app.get("/api/persons/:id", (req, res, next) => {
+  const id = req.params.id;
+
+  Person.findById(id)
+    .then((response) => {
+      if (response) {
+        res.json(response);
+      } else {
+        res.status(400).end();
+      }
+    })
+    .catch((err) => {
+      next(err);
     });
 });
 
@@ -80,10 +71,7 @@ app.delete("/api/persons/:id", (req, res) => {
       res.json(result);
     })
     .catch((err) => {
-      res.status(404).json({
-        code: "404",
-        message: err,
-      });
+      next(err);
     });
 });
 
@@ -113,38 +101,30 @@ app.post("/api/persons", (req, res) => {
           res.status(200).json(response);
         })
         .catch((err) => {
-          res.status(400).json({
-            stats: 400,
-            message: err,
-          });
+          next(err);
         });
     }
   });
 });
 
 app.put("/api/persons/:id", (req, res) => {
-  const id = Number(req.params.id);
+  const id = req.params.id;
   const body = req.body;
-  let updatedPerson = undefined;
 
-  for (let p of persons) {
-    if (p.id === id) {
-      console.log(body.number);
-      p.number = body.number;
-      updatedPerson = p;
-      console.log(updatedPerson);
-      break;
-    }
-  }
-
-  if (updatedPerson) {
-    res.json(updatedPerson);
-  } else {
-    res.status(402).json({
-      message: `Cannot updatePerson with id ${id}`,
+  Person.findByIdAndUpdate(id, { number: body.number })
+    .then((result) => {
+      res.json({
+        ...result.toJSON(),
+        number: body.number,
+      });
+    })
+    .catch((err) => {
+      next(err);
     });
-  }
 });
+
+app.use(unknownEndpoint);
+app.use(errorHandler);
 
 const PORT = process.env.PORT;
 app.listen(PORT, () => {
