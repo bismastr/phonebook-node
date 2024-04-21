@@ -9,7 +9,7 @@ app.use(express.static("dist"));
 app.use(express.json());
 app.use(morgan(":method :url :response-time ms - :res[content-length] :body"));
 
-morgan.token("body", (req, res) => {
+morgan.token("body", (req) => {
   return JSON.stringify(req.body);
 });
 
@@ -40,7 +40,7 @@ app.get("/info", (req, res) => {
   res.send(getInfo());
 });
 
-app.get("/api/persons", (req, res) => {
+app.get("/api/persons", (req, res, next) => {
   Person.find({})
     .then((response) => {
       res.json(response);

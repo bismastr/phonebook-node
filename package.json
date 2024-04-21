@@ -8,12 +8,17 @@
     "dev": "nodemon index.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "build:ui": "rm -rf dist && cd ../bisma-learning-fullstack/part2/phonebook && npm run build && cp -r dist ~/Documents/repo/phonebook-node",
-    "deploy:full": "npm run build:ui && git add . && git commit -m uibuild && git push"
+    "deploy:full": "npm run build:ui && git add . && git commit -m uibuild && git push",
+    "lint": "eslint ."
   },
   "author": "bismastr",
   "license": "ISC",
   "devDependencies": {
+    "@eslint/js": "^9.1.1",
     "@flydotio/dockerfile": "^0.5.4",
+    "@stylistic/eslint-plugin-js": "^1.7.2",
+    "eslint": "^9.1.0",
+    "globals": "^15.0.0",
     "nodemon": "^3.1.0"
   },
   "dependencies": {
