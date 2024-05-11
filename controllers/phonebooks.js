@@ -3,14 +3,13 @@ import Person from "../models/phonebook.js";
 
 const phoneBooksRouter = express.Router();
 
-phoneBooksRouter.get("/", (req, res, next) => {
-  Person.find({})
-    .then((response) => {
-      res.json(response);
-    })
-    .catch((err) => {
-      next(err);
-    });
+phoneBooksRouter.get("/", async (req, res, next) => {
+  try {
+    const person = await Person.find({});
+    res.json(person);
+  } catch (err) {
+    next(err);
+  }
 });
 
 phoneBooksRouter.get("/:id", (req, res, next) => {
@@ -57,7 +56,7 @@ phoneBooksRouter.post("/", (req, res, next) => {
       newPerson
         .save()
         .then((response) => {
-          res.status(200).json(response);
+          res.status(201).json(response);
         })
         .catch((err) => {
           next(err);

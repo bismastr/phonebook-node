@@ -1,8 +1,9 @@
 import mongoose from "mongoose";
+import config from "../utils/config.js";
 
 mongoose.set("strictQuery", false);
 
-const url = process.env.MONGODB_URI;
+const url = config.MONGODB_URI;
 console.log(url);
 
 mongoose

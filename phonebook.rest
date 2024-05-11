@@ -17,8 +17,8 @@ DELETE http://localhost:3001/api/persons/661a193622ef23e494ee97df
 POST http://localhost:3001/api/persons
 content-type: application/json
 {
-    "name": "Bismaaasasdadsadsaa",
-    "number": "321312"
+    "name": "Bismo",
+    "number": "031-321321"
 }
 
 ### Update Persons by id
